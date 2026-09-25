@@ -225,7 +225,7 @@ items.GroupBy(x => x).OrderByDescending(g => g.Count()).First().Key;
 
 ### Spoken Q&A (Glassdoor + common follow-ups)
 
-**One-page two-panel sheet (print-ready):** [spoken-qa.html](https://rvegajr.github.io/linqpad-test/spoken-qa.html) · [source](spoken-qa.html)
+**One-page two-panel sheet (print-ready):** [spoken-qa.html](https://ricardovega.dev/linq/) · [source](spoken-qa.html)
 
 #### Struct vs class
 

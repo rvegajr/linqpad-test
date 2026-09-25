@@ -223,12 +223,99 @@ items.GroupBy(x => x).OrderByDescending(g => g.Count()).First().Key;
 | Practice set 1 | Isogram → FirstUnique | Patterns |
 | Practice set 2 | Distinct → TopK | Patterns |
 
-### Spoken (not code — say it)
+### Spoken Q&A (Glassdoor + common follow-ups)
 
-- **struct vs class:** struct = value type (copied); class = reference type (heap). Prefer class for domain objects; struct for small immutable data.
-- **IEnumerable vs List/IList:** `IEnumerable` is a walkable sequence (often lazy). `List`/`IList` is concrete — indexable, has `Count`, safe to return from a solved problem.
-- **Infinite update loops (events):** handler writes the same state → event fires again. Break with no-op guards, command≠event, idempotent handlers, or version/correlation checks.
-- **String:** immutable. Loop concat → `StringBuilder`.
+**One-page two-panel sheet (print-ready):** [spoken-qa.html](https://rvegajr.github.io/linqpad-test/spoken-qa.html) · [source](spoken-qa.html)
+
+#### Struct vs class
+
+**Q: Difference between a struct and a class?**  
+Struct = value type (copied). Class = reference type (variable holds a reference to the heap).
+
+**Q: What prints here?**
+```csharp
+struct S { public int X; }
+var a = new S { X = 1 };
+var b = a;
+b.X = 2;
+Console.WriteLine(a.X); // 1 — b is a copy
+```
+Same with a `class` → prints `2` (same object).
+
+**Q: When do you pick a struct?**  
+Small, immutable, “is a value” data (`Point`, coords, money amount). Rough rule: keep it tiny. Default to **class** for domain objects, identity, inheritance, or anything mutable/large.
+
+**Q: Can a struct inherit another class?**  
+No. Structs don’t support inheritance (they can implement interfaces).
+
+---
+
+#### IEnumerable vs List / IList
+
+**Q: IEnumerable vs List vs IList?**  
+- `IEnumerable<T>` — walk with `foreach` only (LINQ builds on this; often lazy).  
+- `ICollection<T>` — adds `Count`, Add/Remove.  
+- `IList<T>` / `List<T>` — index (`this[i]`), Insert, concrete storage.
+
+**Q: What should a coding problem return?**  
+Prefer `List<T>` / `IList<T>` so the caller can index and count without re-running a query.
+
+**Q: What is deferred execution?**  
+`var q = xs.Where(...);` does nothing yet. It runs when you enumerate: `foreach`, `ToList()`, `Count()`, `First()`, etc.
+
+**Q: Trap — why does this include the 4?**
+```csharp
+var numbers = new List<int> { 1, 2, 3 };
+var q = numbers.Select(x => x * 2);
+numbers.Add(4);
+foreach (var x in q) … // 2,4,6,8 — query sees live data
+```
+Fix: materialize once with `.ToList()` when you want a snapshot.
+
+**Q: IEnumerable vs IQueryable?** (only if they go DB)  
+`IEnumerable` = in-memory `Func`, runs in your process. `IQueryable` = expression tree, EF can turn into SQL. Today’s coding round is almost certainly in-memory.
+
+---
+
+#### String / StringBuilder
+
+**Q: Are strings mutable?**  
+No. Every change allocates a new `string`.
+
+**Q: Why not `s += x` in a loop?**  
+Each `+=` copies the whole string → O(n²) allocations. Use `StringBuilder.Append`, then `ToString()` once.
+
+**Q: String vs StringBuilder?**  
+`string` for normal text. `StringBuilder` when you build text in a loop or many pieces.
+
+---
+
+#### Event-driven infinite update loops (Glassdoor)
+
+**Q: In an event-driven architecture, how do you prevent infinite update loops?**  
+A handler reacts to an event, writes state, that write publishes the same event again → loop.
+
+**Break it with:**
+1. **No-op guard** — if new value equals old, don’t publish.  
+2. **Command ≠ event** — commands change state; events announce what happened; handlers don’t re-issue the same command blindly.  
+3. **Idempotent handlers** — applying the same event twice is safe / no second emit.  
+4. **Version / correlation id** — ignore stale or self-caused updates.  
+5. **Separate read vs write models** when a projection shouldn’t write back to the same stream.
+
+**Tiny example:** UI field `TextChanged` → saves → save raises `TextChanged` again. Fix: only save when value actually changed, or suppress events while applying an update.
+
+---
+
+#### Extra they may toss in (Alex already probed some)
+
+| Q | Short answer |
+|---|---|
+| `async` / `await`? | Marks a method that can yield; `await` continues after the `Task` completes without blocking the thread. |
+| `static` method? | Belongs to the type; no instance required. |
+| DI Transient vs Singleton? | Transient = new each resolve. Singleton = one for app lifetime. (Scoped = one per request.) |
+| `ref` / `out`? | Pass by reference; `out` must be assigned inside the method. |
+| `==` vs `.Equals` on strings? | Prefer `Equals` / `string.Equals(..., OrdinalIgnoreCase)` when case rules matter. |
+| Array vs List? | Array fixed length; List grows (`Add`). |
 
 ## License
 

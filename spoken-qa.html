@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>C# Spoken Q&amp;A — Filevine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  @page { size: letter; margin: 0.35in; }
+  :root {
+    --ink: #15202b; --muted: #5a6a78; --line: #d5dde6; --band: #0f3d5e;
+    --band-soft: #e8f1f7; --code-bg: #f4f7fa; --accent: #1a7a5c; --panel: #fafcfd;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: "IBM Plex Sans", Arial, Helvetica, sans-serif;
+    font-size: 10.5px; line-height: 1.28; color: var(--ink);
+    margin: 0 auto; padding: 16px 18px 20px; max-width: 900px;
+    background: linear-gradient(180deg, #f7fafc 0%, #fff 56px);
+  }
+  .mast { display:flex; align-items:flex-end; justify-content:space-between; gap:12px;
+    padding-bottom:6px; border-bottom:2.5px solid var(--band); margin-bottom:8px; }
+  h1 { font-size:22px; font-weight:700; margin:0; letter-spacing:-0.03em; color:var(--band); line-height:1; }
+  .tag { font-size:11px; font-weight:500; color:var(--muted); text-align:right; line-height:1.3; }
+  .tip { display:flex; gap:10px; align-items:baseline; background:var(--band-soft); border-radius:4px;
+    padding:6px 10px; margin-bottom:10px; font-size:11.5px; }
+  .tip .label { font-weight:700; color:var(--band); text-transform:uppercase; letter-spacing:0.06em; font-size:10px; flex:0 0 auto; }
+  .panels { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:4px; padding:8px 10px 10px; min-width:0; }
+  .panel h2 { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:#fff;
+    background:var(--band); margin:0 0 6px 0; padding:3px 7px; border-radius:3px; }
+  .block + .block { margin-top:8px; }
+  .block h3 { font-size:12px; font-weight:700; color:var(--accent); margin:0 0 4px 0; }
+  .qa { margin:0 0 5px 0; }
+  .qa .q { font-weight:600; color:var(--band); margin:0 0 1px 0; }
+  .qa .a { margin:0; }
+  code, pre { font-family:"IBM Plex Mono", Menlo, Consolas, monospace; font-size:9.5px; }
+  code { background:var(--code-bg); padding:0 3px; border-radius:2px; }
+  pre { background:var(--code-bg); border:1px solid var(--line); border-radius:3px; padding:5px 7px;
+    margin:3px 0 5px; overflow:hidden; white-space:pre-wrap; line-height:1.25; }
+  ul { margin:2px 0 4px; padding-left:16px; }
+  li { margin-bottom:1px; }
+  .footer { margin-top:10px; padding-top:6px; border-top:1.5px solid var(--line); font-size:10.5px;
+    color:var(--muted); display:grid; grid-template-columns:repeat(3,1fr); gap:6px 10px; }
+  .footer strong { color:var(--ink); }
+  .actions { margin-top:12px; font-size:12px; color:var(--muted); }
+  .actions a { color:var(--band); }
+  @media print {
+    body { padding:0; max-width:none; background:#fff; font-size:8.2px; }
+    h1 { font-size:14px; }
+    .tip { font-size:8px; padding:3px 6px; margin-bottom:5px; }
+    .panels { gap:7px; }
+    .panel { padding:5px 6px; }
+    .panel h2 { font-size:7.5px; padding:2px 4px; }
+    .block h3 { font-size:8.5px; }
+    .block + .block { margin-top:5px; }
+    code, pre { font-size:7.2px; }
+    pre { padding:3px 4px; }
+    .footer { font-size:7.5px; margin-top:5px; }
+    .actions { display:none; }
+  }
+  @media screen and (max-width:700px) {
+    .panels { grid-template-columns:1fr; }
+    .footer { grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="mast">
+  <h1>C# Spoken Q&amp;A</h1>
+  <div class="tag">Filevine coding round<br>Two panels · one page print</div>
+</div>
+<div class="tip">
+  <span class="label">Alex</span>
+  <span>60 min · <b>array + string</b> · <b>talk out loud</b> + <b>comment</b> · band <b>$200k–$215k</b></span>
+</div>
+<div class="panels">
+  <div class="panel">
+    <h2>Struct vs class</h2>
+    <div class="block">
+      <div class="qa"><p class="q">Q: Difference?</p>
+        <p class="a"><b>Struct</b> = value type (copied). <b>Class</b> = reference type (heap reference).</p></div>
+      <div class="qa"><p class="q">Q: What prints?</p>
+<pre>struct S { public int X; }
+var a = new S { X = 1 };
+var b = a; b.X = 2;
+Console.WriteLine(a.X); // 1 — copy
+// class → prints 2 (same object)</pre></div>
+      <div class="qa"><p class="q">Q: When pick a struct?</p>
+        <p class="a">Small, immutable, “is a value” (<code>Point</code>, money). Default to <b>class</b> for domain objects, identity, inheritance, mutable/large.</p></div>
+      <div class="qa"><p class="q">Q: Can a struct inherit a class?</p>
+        <p class="a">No. Can implement interfaces only.</p></div>
+    </div>
+    <div class="block">
+      <h3>String / StringBuilder</h3>
+      <div class="qa"><p class="q">Q: Are strings mutable?</p>
+        <p class="a">No. Every change allocates a new <code>string</code>.</p></div>
+      <div class="qa"><p class="q">Q: Why not <code>s += x</code> in a loop?</p>
+        <p class="a">Each <code>+=</code> recopies → O(n²). Use <code>StringBuilder.Append</code>, then <code>ToString()</code>.</p></div>
+      <div class="qa"><p class="q">Q: String vs StringBuilder?</p>
+        <p class="a"><code>string</code> for normal text. <code>StringBuilder</code> when building in a loop / many pieces.</p></div>
+    </div>
+  </div>
+  <div class="panel">
+    <h2>IEnumerable · List · IList</h2>
+    <div class="block">
+      <div class="qa"><p class="q">Q: Ladder?</p>
+        <ul>
+          <li><code>IEnumerable&lt;T&gt;</code> — foreach only (LINQ; often lazy)</li>
+          <li><code>ICollection&lt;T&gt;</code> — Count, Add/Remove</li>
+          <li><code>IList&lt;T&gt;</code> / <code>List&lt;T&gt;</code> — index <code>[i]</code></li>
+        </ul></div>
+      <div class="qa"><p class="q">Q: What should a coding problem return?</p>
+        <p class="a"><code>List&lt;T&gt;</code> / <code>IList&lt;T&gt;</code> — concrete, indexable, safe.</p></div>
+      <div class="qa"><p class="q">Q: Deferred execution?</p>
+        <p class="a"><code>var q = xs.Where(...);</code> does nothing yet. Runs on <code>foreach</code> / <code>ToList</code> / <code>Count</code> / <code>First</code>.</p></div>
+      <div class="qa"><p class="q">Q: Trap — why include the 4?</p>
+<pre>var numbers = new List&lt;int&gt; { 1, 2, 3 };
+var q = numbers.Select(x =&gt; x * 2);
+numbers.Add(4);
+// foreach q → 2,4,6,8 (live data)
+// Fix: .ToList() for a snapshot</pre></div>
+      <div class="qa"><p class="q">Q: IEnumerable vs IQueryable?</p>
+        <p class="a">In-memory <code>Func</code> vs expression tree → SQL. Today’s round is in-memory.</p></div>
+    </div>
+    <div class="block">
+      <h3>Event infinite loops (Glassdoor)</h3>
+      <div class="qa"><p class="q">Q: How do you prevent them?</p>
+        <p class="a">Handler writes state → same event fires again → loop.</p></div>
+      <ul>
+        <li><b>No-op guard</b> — same value → don’t publish</li>
+        <li><b>Command ≠ event</b> — don’t re-issue blindly</li>
+        <li><b>Idempotent</b> handlers</li>
+        <li><b>Version / correlation</b> — ignore self/stale</li>
+      </ul>
+      <p class="a" style="margin:4px 0 0"><b>Example:</b> <code>TextChanged</code> → save → save raises <code>TextChanged</code>. Fix: only save on real change, or suppress while applying.</p>
+    </div>
+  </div>
+</div>
+<div class="footer">
+  <div class="item"><strong>async / await</strong> — yield; continue after Task without blocking the thread</div>
+  <div class="item"><strong>static</strong> — belongs to the type; no instance required</div>
+  <div class="item"><strong>Transient vs Singleton</strong> — new each resolve vs one for app lifetime (Scoped = per request)</div>
+</div>
+<p class="actions">
+  Print → Save as PDF for a one-page sheet ·
+  <a href="https://github.com/rvegajr/linqpad-test">rvegajr/linqpad-test</a> ·
+  <a href="https://github.com/rvegajr/linqpad-test#spoken-qa-glassdoor--common-follow-ups">Full README patterns</a>
+</p>
+</body>
+</html>
